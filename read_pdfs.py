@@ -35,18 +35,18 @@ for file in files:
 
     loader = PyPDFLoader(file)
 
-    print("Loading PDF...")
+    print("Loading PDF...\n")
     pages = loader.load_and_split()
 
-    print("Processing prompt...")
+    print("Processing prompt...\n")
     prompt = PromptTemplate.from_template(prompt_template)
 
-    print("Creating a vector store and retriever...")
+    print("Creating a vector store and retriever...\n")
     vectore_store = DocArrayInMemorySearch.from_documents(pages, embedding = ollama_embeddings)
 
     retriever = vectore_store.as_retriever()
 
-    print("Creating a chain...")
+    print("Creating a chain...\n")
     chain = (
     {
         'context': itemgetter('question') | retriever,
@@ -64,13 +64,14 @@ for file in files:
     'What are the advantages and disadvantages of the proposed approach?'
     ]
 
-    with open(result_file, 'a') as f:
+    print("\nAnswering questions...\n")
+    with open(result_file, 'a', encoding='utf-8') as f:
             
         f.write('-------------------\n')
-        f.write(f'File: {file_name}\n')
+        f.write(f'File: {file_name}\n\n')
 
         for question in questions:
-            f.write(f'Question: {question}\n')
+            f.write(f'\nQuestion: {question}\n')
             f.write(f"Answer: {chain.invoke({'question': question})}\n")
             f.write('-------------------\n')
 
